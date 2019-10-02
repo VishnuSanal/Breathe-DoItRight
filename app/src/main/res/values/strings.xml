@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Breathe - Do It Right</string>
+    <string name="start">Start</string>
+    <string name="breathe">Breathe</string>
+    <string name="inhale_exhale">Inhale....Exhale....</string>
+    <string name="good_job">Good Job</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="set_breathe_out_time">Set Breathe time</string>
+    <string name="reset_to_default">Reset to default</string>
+    <string name="_5s">5s</string>
+</resources>
