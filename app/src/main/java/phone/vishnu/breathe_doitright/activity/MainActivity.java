@@ -1,24 +1,29 @@
-package phone.vishnu.breathe_doitright;
+package phone.vishnu.breathe_doitright.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.github.florent37.viewanimator.AnimationListener;
 import com.github.florent37.viewanimator.ViewAnimator;
 
 import java.text.MessageFormat;
 
-import util.Prefs;
+import phone.vishnu.breathe_doitright.fragment.EditFragment;
+import phone.vishnu.breathe_doitright.R;
+import phone.vishnu.breathe_doitright.util.Prefs;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
-    static int DURATION = 5000;
+    public static int DURATION = 5000;
     private ImageView imageView;
     private TextView guideTv;
     private TextView minUpdateTv;

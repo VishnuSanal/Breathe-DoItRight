@@ -1,15 +1,19 @@
-package phone.vishnu.breathe_doitright;
+package phone.vishnu.breathe_doitright.fragment;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import phone.vishnu.breathe_doitright.R;
+import phone.vishnu.breathe_doitright.activity.MainActivity;
 
 public class EditFragment extends Fragment {
 
@@ -31,6 +35,7 @@ public class EditFragment extends Fragment {
         timeUp = view.findViewById(R.id.editTimeSeekBar);
         progressTv = view.findViewById(R.id.progressTv);
         resetTv= view.findViewById(R.id.resetTv);
+        timeUp.incrementProgressBy(100);
         return view;
     }
 

@@ -1,4 +1,4 @@
-package util;
+package phone.vishnu.breathe_doitright.util;
 
 import android.app.Activity;
 import android.content.Context;
