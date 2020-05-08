@@ -1,6 +1,5 @@
 package phone.vishnu.breathe_doitright.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -15,11 +14,9 @@ import com.github.florent37.viewanimator.ViewAnimator;
 
 import java.text.MessageFormat;
 
-import phone.vishnu.breathe_doitright.fragment.EditFragment;
 import phone.vishnu.breathe_doitright.R;
+import phone.vishnu.breathe_doitright.fragment.EditFragment;
 import phone.vishnu.breathe_doitright.util.Prefs;
-
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,33 +24,59 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView;
     private TextView guideTv;
     private TextView minUpdateTv;
+    private TextView breathsTv;
+    private TextView timeTv;
+    private TextView sessionTv;
+    private TextView startButton;
+    private TextView stopButton;
+    private ViewAnimator animator;
     private Prefs prefs;
+    private volatile boolean isRunning = false;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         imageView = findViewById(R.id.imageView);
-
-        TextView breathsTv = findViewById(R.id.breathsTodayTv);
-        TextView timeTv = findViewById(R.id.lastSessionTv);
-        TextView sessionTv = findViewById(R.id.todayMinutesTv);
-
+        breathsTv = findViewById(R.id.breathsTodayTv);
+        timeTv = findViewById(R.id.lastSessionTv);
+        sessionTv = findViewById(R.id.todayMinutesTv);
         guideTv = findViewById(R.id.guideTv);
         minUpdateTv = findViewById(R.id.oneMinuteTv);
-        startIntroAnimation();
+        startButton = findViewById(R.id.startButton);
+        stopButton = findViewById(R.id.stopButton);
         prefs = new Prefs(this);
-        TextView startButton = findViewById(R.id.startButton);
+        startIntroAnimation();
+
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startAnimation();
+                if (!isRunning)
+                    startAnimation();
+            }
+        });
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopAnimation();
             }
         });
 
         breathsTv.setText(MessageFormat.format("{0} Breaths", prefs.getBreaths()));
         timeTv.setText(prefs.getDate());
         sessionTv.setText(MessageFormat.format("{0} min today", prefs.getSessions()));
+    }
+
+    private void stopAnimation() {
+        isRunning = false;
+        stopButton.setVisibility(View.GONE);
+        imageView.setScaleX(1.0f);
+        imageView.setScaleY(1.0f);
+        minUpdateTv.setText(("00 : 00"));
+        countDownTimer.cancel();
+        animator.cancel();
     }
 
     private void startIntroAnimation() {
@@ -74,22 +97,45 @@ public class MainActivity extends AppCompatActivity {
 
     private void startAnimation() {
 
-        ViewAnimator
+        animator = ViewAnimator
                 .animate(imageView)
                 .alpha(0, 1)
                 .onStart(new AnimationListener.Start() {
                     @Override
                     public void onStart() {
+                        isRunning = true;
                         guideTv.setText(getResources().getString(R.string.inhale_exhale));
-                        new CountDownTimer(60000, 1000) {
+                        stopButton.setVisibility(View.VISIBLE);
+
+                        countDownTimer = new CountDownTimer(60000, 1000) {
                             @Override
                             public void onTick(long millisUntilFinished) {
                                 minUpdateTv.setText(("00 : " + millisUntilFinished / 1000));
+//                                Log.e("vishnu", "onTick: " + millisUntilFinished);
+                                if (millisUntilFinished < 1000) {
+                                    prefs.setBreaths(prefs.getBreaths() + 1);
+                                    prefs.setDate(System.currentTimeMillis());
+                                    prefs.setSessions(prefs.getSessions() + 1);
+
+                                    isRunning = false;
+                                    stopButton.setVisibility(View.GONE);
+
+                                    recreate();
+                                }
                             }
 
                             @Override
                             public void onFinish() {
+                                isRunning = false;
+                                stopButton.setVisibility(View.GONE);
 
+                                minUpdateTv.setText(("00 : 00"));
+                                guideTv.setText(getResources().getString(R.string.good_job));
+
+                                imageView.setScaleX(1.0f);
+                                imageView.setScaleY(1.0f);
+
+                        recreate();
                             }
                         }.start();
 
@@ -100,37 +146,9 @@ public class MainActivity extends AppCompatActivity {
                 .thenAnimate(imageView)
                 .scale(0.01f, 1.5f, 0.01f)
                 .rotation(360)
-                .repeatCount(10)
+                .repeatCount(11)
                 .duration(DURATION)
-                .onStop(new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        guideTv.setText(getResources().getString(R.string.good_job));
-                        imageView.setScaleX(1.0f);
-                        imageView.setScaleY(1.0f);
-
-                        prefs.setBreaths(prefs.getBreaths() + 1);
-                        prefs.setDate(System.currentTimeMillis());
-
-                        prefs.setSessions(prefs.getSessions() + 1);
-
-                        new CountDownTimer(1000, 1000) {
-
-                            @Override
-                            public void onTick(long millisUntilFinished) {
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                finish();
-                            }
-                        }.start();
-                    }
-                })
                 .start();
-
-
     }
 
     public void editButtonClicked(View view) {
